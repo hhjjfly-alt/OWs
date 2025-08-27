@@ -1,34 +1,42 @@
 #!/bin/bash
-# Modify default system settings
+set -e
 
-# 暂时回滚
-sed -i '/^#src-git luci https:\/\/github.com\/coolsnowwolf\/luci$/s/^#//' feeds.conf.default && sed -i '/^src-git luci https:\/\/github.com\/coolsnowwolf\/luci\.git;openwrt-23\.05$/s/^/#/' feeds.conf.default
+#---------------------------------------------------
+# 工具：只添加一次 feed（防重复）
+#---------------------------------------------------
+add_feed_once() {
+    local name="$1"
+    local url="$2"
+    local file="feeds.conf.default"
+    grep -qF "src-git $name " "$file" || echo "$url" >> "$file"
+}
 
-# 修改默认IP为192.168.10.1
-sed -i 's/192.168.1.1/10.0.0.8/g' package/base-files/files/bin/config_generate 
+#---------------------------------------------------
+# 1) 回滚/锁定 luci feed（Lean）
+#---------------------------------------------------
+sed -i '/^#src-git luci https:\/\/github.com\/coolsnowwolf\/luci$/s/^#//' feeds.conf.default
+sed -i '/^src-git luci https:\/\/github.com\/coolsnowwolf\/luci\.git;openwrt-23\.05$/s/^/#/' feeds.conf.default
 
-# Hello World
-#echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
+#---------------------------------------------------
+# 2) 全局替换默认 LAN IP
+#---------------------------------------------------
+sed -i 's/192\.168\.1\.1/10.0.0.8/g' package/base-files/files/bin/config_generate
 
-# luci-theme-infinityfreedom
-echo 'src-git infinityfreedom https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom.git' >>feeds.conf.default
+#---------------------------------------------------
+# 3) 添加 feeds（仅当不存在时追加）
+#---------------------------------------------------
+add_feed_once "infinityfreedom"   "src-git infinityfreedom https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom.git"
+add_feed_once "passwall_packages" "src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main"
+add_feed_once "passwall_luci"     "src-git passwall_luci https://github.com/xiaorouji/openwrt-passwall.git;main"
+add_feed_once "istore"            "src-git istore https://github.com/linkease/istore;main"
 
-# passwall
-echo "src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main" >> feeds.conf.default
-echo "src-git passwall_luci https://github.com/xiaorouji/openwrt-passwall.git;main" >> feeds.conf.default
+#---------------------------------------------------
+# 4) 替换默认主题为 argon
+#---------------------------------------------------
+[[ -d package/lean/luci-theme-argon ]] && rm -rf package/lean/luci-theme-argon
+git clone -b 18.06 --depth 1 https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon
 
-# iStore
-echo "src-git istore https://github.com/linkease/istore;main" >> feeds.conf.default
-
-# 替换默认主题
-rm -rf package/lean/luci-theme-argon 
-git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git  package/lean/luci-theme-argon
-
-# --- Update SmartDNS to the latest release ---
-SMARTDNS_MK="feeds/packages/net/smartdns/Makefile"
-if [ -f "$SMARTDNS_MK" ]; then
-    sed -i 's/^\(PKG_VERSION:=\).*/\11.2024.46/'    "$SMARTDNS_MK"
-    sed -i 's/^\(PKG_SOURCE_VERSION:=\).*/\1b525170bfd627607ee5ac81f97ae0f1f4f087d6b/' "$SMARTDNS_MK"
-    sed -i 's/^PKG_MIRROR_HASH/#&/' "$SMARTDNS_MK"
-fi
-
+#---------------------------------------------------
+# 5) 结束提示
+#---------------------------------------------------
+echo "=== configure.sh 完成 ==="
