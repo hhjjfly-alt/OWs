@@ -24,8 +24,11 @@ echo "src-git istore https://github.com/linkease/istore;main" >> feeds.conf.defa
 rm -rf package/lean/luci-theme-argon 
 git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git  package/lean/luci-theme-argon
 
-# Update SmartDNS version
-sed -i 's/1.2024.45/1.2024.46/g' feeds/packages/net/smartdns/Makefile
-sed -i 's/9ee27e7ba2d9789b7e007410e76c06a957f85e98/b525170bfd627607ee5ac81f97ae0f1f4f087d6b/g' feeds/packages/net/smartdns/Makefile
-sed -i 's/^PKG_MIRROR_HASH/#&/' feeds/packages/net/smartdns/Makefile
+# --- Update SmartDNS to the latest release ---
+SMARTDNS_MK="feeds/packages/net/smartdns/Makefile"
+if [ -f "$SMARTDNS_MK" ]; then
+    sed -i 's/^\(PKG_VERSION:=\).*/\11.2024.46/'    "$SMARTDNS_MK"
+    sed -i 's/^\(PKG_SOURCE_VERSION:=\).*/\1b525170bfd627607ee5ac81f97ae0f1f4f087d6b/' "$SMARTDNS_MK"
+    sed -i 's/^PKG_MIRROR_HASH/#&/' "$SMARTDNS_MK"
+fi
 
