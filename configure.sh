@@ -5,7 +5,7 @@
 sed -i '/^#src-git luci https:\/\/github.com\/coolsnowwolf\/luci$/s/^#//' feeds.conf.default && sed -i '/^src-git luci https:\/\/github.com\/coolsnowwolf\/luci\.git;openwrt-23\.05$/s/^/#/' feeds.conf.default
 
 # 修改默认IP为192.168.10.1
-sed -i 's/192.168.1.1/192.168.10.1/g' package/base-files/files/bin/config_generate 
+sed -i 's/192.168.1.1/10.0.0.8/g' package/base-files/files/bin/config_generate 
 
 # Hello World
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
@@ -23,4 +23,9 @@ echo "src-git istore https://github.com/linkease/istore;main" >> feeds.conf.defa
 # 替换默认主题
 rm -rf package/lean/luci-theme-argon 
 git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git  package/lean/luci-theme-argon
+
+# Update SmartDNS version
+sed -i 's/1.2024.45/1.2024.46/g' feeds/packages/net/smartdns/Makefile
+sed -i 's/9ee27e7ba2d9789b7e007410e76c06a957f85e98/b525170bfd627607ee5ac81f97ae0f1f4f087d6b/g' feeds/packages/net/smartdns/Makefile
+sed -i 's/^PKG_MIRROR_HASH/#&/' feeds/packages/net/smartdns/Makefile
 
