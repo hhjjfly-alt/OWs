@@ -19,6 +19,11 @@ git clone --depth 1 https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk.git pac
 # Add Lucky app
 git clone https://github.com/gdy666/luci-app-lucky.git package/lucky
 
+# Update SmartDNS version
+sed -i 's/1.2024.45/1.2024.46/g' feeds/packages/net/smartdns/Makefile
+sed -i 's/9ee27e7ba2d9789b7e007410e76c06a957f85e98/b525170bfd627607ee5ac81f97ae0f1f4f087d6b/g' feeds/packages/net/smartdns/Makefile
+sed -i 's/^PKG_MIRROR_HASH/#&/' feeds/packages/net/smartdns/Makefile
+
 # Add luci-app-dockerman
 pushd package/lean
 git clone --depth=1 https://github.com/lisaac/luci-app-dockerman
