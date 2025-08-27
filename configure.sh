@@ -36,7 +36,9 @@ add_feed_once "istore"            "src-git istore https://github.com/linkease/is
 [[ -d package/lean/luci-theme-argon ]] && rm -rf package/lean/luci-theme-argon
 git clone -b 18.06 --depth 1 https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon
 
+# 5)####### 更改大雕源码（可选）########
+sed -i 's/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=6.12/' target/linux/x86/Makefile
 #---------------------------------------------------
-# 5) 结束提示
+# 6) 结束提示
 #---------------------------------------------------
 echo "=== configure.sh 完成 ==="
