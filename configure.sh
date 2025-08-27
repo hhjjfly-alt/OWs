@@ -23,3 +23,11 @@ echo "src-git istore https://github.com/linkease/istore;main" >> feeds.conf.defa
 # 替换默认主题
 rm -rf package/lean/luci-theme-argon 
 git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git  package/lean/luci-theme-argon
+
+# Add Lucky app
+git clone https://github.com/gdy666/luci-app-lucky.git package/lucky
+
+# Add luci-app-dockerman
+pushd package/lean
+git clone --depth=1 https://github.com/lisaac/luci-app-dockerman
+popd
