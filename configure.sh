@@ -8,18 +8,25 @@ add_feed_once() {
     local name="$1"
     local url="$2"
     local file="feeds.conf.default"
+    [[ ! -f "$file" ]] && { echo "Error: $file not found"; exit 1; }
     grep -qF "src-git $name " "$file" || echo "$url" >> "$file"
 }
 
 #---------------------------------------------------
 # 1) 回滚/锁定 luci feed（Lean）
 #---------------------------------------------------
+[[ ! -f feeds.conf.default ]] && { echo "Error: feeds.conf.default not found"; exit 1; }
+if ! grep -q "coolsnowwolf/luci" feeds.conf.default; then
+    echo "Error: Expected luci feed not found in feeds.conf.default"
+    exit 1
+fi
 sed -i '/^#src-git luci https:\/\/github.com\/coolsnowwolf\/luci$/s/^#//' feeds.conf.default
 sed -i '/^src-git luci https:\/\/github.com\/coolsnowwolf\/luci\.git;openwrt-23\.05$/s/^/#/' feeds.conf.default
 
 #---------------------------------------------------
 # 2) 全局替换默认 LAN IP
 #---------------------------------------------------
+[[ ! -f package/base-files/files/bin/config_generate ]] && { echo "Error: config_generate file not found"; exit 1; }
 sed -i 's/192\.168\.1\.1/10.0.0.8/g' package/base-files/files/bin/config_generate
 
 #---------------------------------------------------
@@ -37,6 +44,7 @@ add_feed_once "istore"            "src-git istore https://github.com/linkease/is
 git clone -b 18.06 --depth 1 https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon
 
 # 5)###### 更改大雕源码（可选）#######
+[[ ! -f target/linux/x86/Makefile ]] && { echo "Error: x86 Makefile not found"; exit 1; }
 sed -i 's/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=6.12/' target/linux/x86/Makefile
 #---------------------------------------------------
 # 6) 结束提示
