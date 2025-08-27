@@ -15,3 +15,11 @@ git clone --depth 1 https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk.git pac
 
 # OpenClash
 # git clone --depth 1 https://github.com/vernesong/OpenClash.git package/luci-app-openclash
+
+# Add Lucky app
+git clone https://github.com/gdy666/luci-app-lucky.git package/lucky
+
+# Add luci-app-dockerman
+pushd package/lean
+git clone --depth=1 https://github.com/lisaac/luci-app-dockerman
+popd
