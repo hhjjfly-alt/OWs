@@ -47,6 +47,9 @@ git clone -b 18.06 --depth 1 https://github.com/jerrykuku/luci-theme-argon.git p
 [[ ! -f target/linux/x86/Makefile ]] && { echo "Error: x86 Makefile not found"; exit 1; }
 sed -i 's/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=6.12/' target/linux/x86/Makefile
 #---------------------------------------------------
-# 6) 结束提示
+# 6) 在固件描述里加入编译日期
+sed -i "s/DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION='OpenWrt $(date +%Y%m%d)'/" \
+    package/base-files/files/etc/openwrt_release
+# 7) 结束提示
 #---------------------------------------------------
 echo "=== configure.sh 完成 ==="
