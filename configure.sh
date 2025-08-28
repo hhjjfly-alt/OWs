@@ -50,6 +50,20 @@ sed -i 's/KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=6.12/' target/linux/x86/Makefile
 # 6) 在固件描述里加入编译日期
 sed -i "s/DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION='OpenWrt $(date +%Y%m%d)'/" \
     package/base-files/files/etc/openwrt_release
-# 7) 结束提示
+# 7) # ---------------- Docker 防坑四步 ----------------
+# 1. 去掉官方旧包
+rm -rf feeds/packages/net/{docker*,containerd,runc}
+rm -rf feeds/luci/applications/luci-app-dockerman
+
+# 2. 拉最新源码（依赖完整）
+git clone --depth 1 https://github.com/lisaac/luci-app-dockerman package/luci-app-dockerman
+
+# 3. 选上所有依赖（menuconfig 里勾上）
+#   Utilities → docker
+#   Utilities → containerd
+#   Utilities → runc
+#   Network → ttyd
+#   LuCI → Applications → luci-app-dockerman
+# 8) 结束提示
 #---------------------------------------------------
 echo "=== configure.sh 完成 ==="
